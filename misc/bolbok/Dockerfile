@@ -1,7 +1,7 @@
 FROM ubuntu:rolling 
 
-#RUN apt-get update \
-#    && apt install openssh-server -y
+RUN apt-get update \
+    && apt install openssh-server -y
 
 RUN useradd bolbok -s /bin/rbash  \
     && echo "bolbok:x0101x" | chpasswd
@@ -15,10 +15,10 @@ RUN echo "export PATH=/usr/bolbok/bin" >> /home/bolbok/.bashrc
 RUN mkdir -p /var/users/bolbok/secrets/youwillneverfindthis/
 COPY  flag.txt /var/users/bolbok/secrets/youwillneverfindthis/
 
-#RUN echo "PermitRootLogin no" >> /etc/ssh/sshd_config &&\
-#   echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
+RUN echo "PermitRootLogin no" >> /etc/ssh/sshd_config &&\
+    echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
 
-#RUN service ssh restart
+RUN service ssh restart
 
 RUN chown root:root /home/bolbok/.bashrc \
     && chmod 755 .bashrc
