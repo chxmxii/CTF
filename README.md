@@ -1,4 +1,4 @@
-![](./logo.png)
+![](./logo.png#center)
 ## Info
 - Event place: TEKUP University.
 - Event duration: `14hrs`.
