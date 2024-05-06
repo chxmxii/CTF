@@ -1,8 +1,3 @@
-# CYBERTTEK CTF-2024
-
-This repository contains my challenges for Securinets TEK-UP CTF **CyberTEK 2024**.
-
----
 ## Info
 - Event place: TEKUP University.
 - Event duration: `14hrs`.
