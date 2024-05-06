@@ -14,4 +14,6 @@ ___
 |   [ekko](challenges/ekko)          |  494   |   7    | chxmxii |
 |   [heimerdigger](challenges/heimerdigger)  |  146   |   18   | xhlayel, chxmxii |
 
-![](./logo.png#center)
+<p align="center">
+  <img src="./logo.png" />
+</p>
