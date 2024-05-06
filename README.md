@@ -13,7 +13,7 @@ ___
 |   [bolbok](challenges/bolbok)        |  470   |   4    | chxmxii |
 |   [ekko](challenges/ekko)          |  494   |   7    | chxmxii |
 |   [heimerdigger](challenges/heimerdigger)  |  146   |   18   | xhlayel, chxmxii |
-
+---
 <p align="center">
   <img src="./logo.png" />
 </p>
