@@ -1,0 +1,9 @@
+version: '3'
+services:
+  challenge:
+    container_name: openheimer
+    build:
+      context: ./challenge
+    ports:
+      - "1010:1337"
+    privileged: true

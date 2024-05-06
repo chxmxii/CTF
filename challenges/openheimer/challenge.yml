@@ -1,0 +1,23 @@
+name: "openheimer"
+author: "chxmxii"
+category: misc
+description: |-
+  terraform's good, but have you tried opentofu?
+  
+  `nc pwned.securinets-tekup.tech 1010`
+  
+  **author**: chxmxii
+value: 500
+type: dynamic
+extra:
+  initial: 500
+  decay: 20
+  minimum: 10
+flags:
+  - Securinets{oP3N7OfU_I5_4w35Om3_8U7_83c4R3FuL_WH3n_WORkin9_Wi7h_53Cr3Ts}
+#tags:
+#  - easy
+files:
+  - handout/misc_openheimer.7z
+state: visible
+version: "0.1"
