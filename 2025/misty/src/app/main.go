@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"flag"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -50,12 +51,13 @@ func main() {
 		log.Printf("Successfully created bucket %s\n", BucketName)
 	}
 
-	// upload the file: going to add this as args
-	objectName := "data-sample37"
-	filePath := "./flag.txt"
-	contentType := "application/octet-stream"
+	filePath := flag.String("file", "", "file to be uploaded")
+	objectName := flag.String("obj-name", "", "object name")
+	contentType := flag.String("content-type","application/octet-stream", "content type")
 
-	info, err := minioClient.FPutObject(ctx, BucketName, objectName, filePath, minio.PutObjectOptions{ContentType: contentType})
+	flag.Parse()
+
+	info, err := minioClient.FPutObject(ctx, BucketName, *objectName, *filePath, minio.PutObjectOptions{ContentType: *contentType})
 	if err != nil {
 		log.Fatalln("Failed to upload file:", err)
 	}
