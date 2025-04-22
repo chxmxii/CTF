@@ -16,8 +16,8 @@ var (
 		UseSSL          bool
 	}{
 		EndPoint:        "localhost:9000",
-		AccessKeyID:     "79b64067dba07c88ed83af7b5e",
-		SecretAccessKey: "giClfHTLrRPF2XkMc0F6w7zL929JbFp",
+		AccessKeyID:     "HY2vJl0vhYEUuJt0hpq3",
+		SecretAccessKey: "xdifadKQpR06W7do2w6oZsJD40hnUK9KmPY6Oq7V",
 		UseSSL:          false,
 	}
 
@@ -50,7 +50,7 @@ func main() {
 		log.Printf("Successfully created bucket %s\n", BucketName)
 	}
 
-	// upload the file
+	// upload the file: going to add this as args
 	objectName := "data-sample37"
 	filePath := "./flag.txt"
 	contentType := "application/octet-stream"
