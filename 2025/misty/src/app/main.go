@@ -51,6 +51,7 @@ func main() {
 		log.Printf("Successfully created bucket %s\n", BucketName)
 	}
 
+	// upload file
 	filePath := flag.String("file", "", "file to be uploaded")
 	objectName := flag.String("obj-name", "", "object name")
 	contentType := flag.String("content-type","application/octet-stream", "content type")
