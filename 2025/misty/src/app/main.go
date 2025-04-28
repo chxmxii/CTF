@@ -2,66 +2,54 @@ package main
 
 import (
 	"context"
-	"log"
 	"flag"
+	"log"
+	"strings"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-var (
-	Cfg = struct {
-		EndPoint        string
-		AccessKeyID     string
-		SecretAccessKey string
-		UseSSL          bool
-	}{
-		EndPoint:        "localhost:9000",
-		AccessKeyID:     "HY2vJl0vhYEUuJt0hpq3",
-		SecretAccessKey: "xdifadKQpR06W7do2w6oZsJD40hnUK9KmPY6Oq7V",
-		UseSSL:          false,
-	}
-
-	BucketName = "test-mist37"
-	Location   = "us-west-1"
-)
-
 func main() {
-	ctx := context.Background()
-
-	// init minio client
-	minioClient, err := minio.New(Cfg.EndPoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(Cfg.AccessKeyID, Cfg.SecretAccessKey, ""),
-		Secure: Cfg.UseSSL,
-	})
-	if err != nil {
-		log.Fatalln("Failed to initialize MinIO client:", err)
-	}
-
-	// create bucket
-	err = minioClient.MakeBucket(ctx, BucketName, minio.MakeBucketOptions{Region: Location})
-	if err != nil {
-		exists, errBucketExists := minioClient.BucketExists(ctx, BucketName)
-		if errBucketExists == nil && exists {
-			log.Printf("We already own bucket %s\n", BucketName)
-		} else {
-			log.Fatalln("Failed to create bucket:", err)
-		}
-	} else {
-		log.Printf("Successfully created bucket %s\n", BucketName)
-	}
-
-	// upload file
-	filePath := flag.String("file", "", "file to be uploaded")
-	objectName := flag.String("obj-name", "", "object name")
-	contentType := flag.String("content-type","application/octet-stream", "content type")
+	// flags
+	filePath := flag.String("filename", "", "Path to the file to upload")
+	bucketName := flag.String("bucketname", "", "S3 bucket name")
+	objectName := flag.String("objname", "", "Object name in the bucket")
+	region := flag.String("region", "us-east-1", "S3 bucket region")
+	endpoint := flag.String("endpoint", "localhost:9000", "S3 server endpoint")
+	creds := flag.String("creds", "", "AccessKeyID:SecretAccessKey for S3 authentication")
 
 	flag.Parse()
 
-	info, err := minioClient.FPutObject(ctx, BucketName, *objectName, *filePath, minio.PutObjectOptions{ContentType: *contentType})
-	if err != nil {
-		log.Fatalln("Failed to upload file:", err)
+	if *filePath == "" || *bucketName == "" || *objectName == "" || *creds == "" {
+		log.Fatalln("filename, bucketname, objname, and creds are required")
 	}
 
-	log.Printf("Successfully uploaded %s of size %d bytes\n", objectName, info.Size)
+	// parse creds
+	parts := strings.SplitN(*creds, ":", 2)
+	if len(parts) != 2 {
+		log.Fatalln("Invalid creds format, expected AccessKeyID:SecretAccessKey")
+	}
+	accessKey := parts[0]
+	secretKey := parts[1]
+
+	ctx := context.Background()
+
+	// createminio client
+	minioClient, err := minio.New(*endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
+		Secure: false, 
+		Region: *region,
+	})
+	if err != nil {
+		log.Fatalln("Error creating MinIO client:", err)
+	}
+
+	// upload file
+	info, err := minioClient.FPutObject(ctx, *bucketName, *objectName, *filePath, minio.PutObjectOptions{})
+	if err != nil {
+		log.Fatalln("Error uploading file:", err)
+	}
+
+	log.Printf("Successfully uploaded %s of size %d bytes\n", *objectName, info.Size)
 }
