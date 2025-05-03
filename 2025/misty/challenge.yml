@@ -1,8 +1,9 @@
 name: "misty"
 author: "chxmxii"
-category: cloud
+category: Misc
 description: |-
   some dev thought `.pem` stood for please expose me.
+  
   **author**: "chxmxii"
 value: 750
 type: dynamic
@@ -12,8 +13,8 @@ extra:
   minimum: 10
 flags:
   - securinets{f8ab6145079417d52bf8c0966b9d4bc122a71542b4320e9d30122125e1e09a91}
-#tags:
-#  - easy
+tags:
+ - cloud
 files:
   - handout/challenge.zip
 state: visible

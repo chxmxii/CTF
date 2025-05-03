@@ -3,6 +3,9 @@ author: "CodeBreaker44"
 category: Misc
 description: |-
   Sometimes I wish I was a cloud... Just floating...
+
+  link: https://cloud-city-1a2641683729526d.s3.us-east-1.amazonaws.com/assets/Horizontal_Website/index.html
+
   **author**: " CodeBreaker44"`
 value: 500
 type: dynamic
@@ -12,9 +15,8 @@ extra:
   minimum: 10
 flags:
   - Securinets{488431a6020a8af2df212aa40f5578a5}
-#tags:
-#  - hard
-files:
-  - https://cloud-city-1a2641683729526d.s3.us-east-1.amazonaws.com/assets/Horizontal_Website/index.html
+tags:
+ - cloud
+# files:
 state: visible
 version: "0.1"
