@@ -4,51 +4,59 @@ import (
 	"context"
 	"flag"
 	"log"
-	"strings"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
+var (
+	Cfg = struct {
+		EndPoint        string
+		AccessKeyID     string
+		SecretAccessKey string
+		UseSSL          bool
+	}{}
+	BucketName string
+	Location   string
+)
+
 func main() {
-	// flags
-	filePath := flag.String("filename", "", "Path to the file to upload")
-	bucketName := flag.String("bucketname", "", "S3 bucket name")
-	objectName := flag.String("objname", "", "Object name in the bucket")
-	region := flag.String("region", "us-east-1", "S3 bucket region")
-	endpoint := flag.String("endpoint", "localhost:9000", "S3 server endpoint")
-	creds := flag.String("creds", "", "AccessKeyID:SecretAccessKey for S3 authentication")
+	//flags
+	flag.StringVar(&Cfg.EndPoint, "endpoint", "", "MinIO server endpoint")
+	flag.StringVar(&Cfg.AccessKeyID, "access-key", "", "MinIO access key ID")
+	flag.StringVar(&Cfg.SecretAccessKey, "secret-key", "", "MinIO secret access key")
+	flag.BoolVar(&Cfg.UseSSL, "use-ssl", false, "Use SSL for connection")
+	flag.StringVar(&BucketName, "bucket", "", "Bucket name")
+	flag.StringVar(&Location, "location", "us-west-1", "Bucket location")
+
+	filePath := flag.String("file", "", "file to be uploaded")
+	objectName := flag.String("object", "", "object name")
+	contentType := flag.String("content-type", "application/octet-stream", "content type")
 
 	flag.Parse()
 
-	if *filePath == "" || *bucketName == "" || *objectName == "" || *creds == "" {
-		log.Fatalln("filename, bucketname, objname, and creds are required")
+	// validate
+	if Cfg.EndPoint == "" || Cfg.AccessKeyID == "" || Cfg.SecretAccessKey == "" {
+		log.Fatalln("Error: endpoint, access-key and secret-key are required parameters")
 	}
-
-	// parse creds
-	parts := strings.SplitN(*creds, ":", 2)
-	if len(parts) != 2 {
-		log.Fatalln("Invalid creds format, expected AccessKeyID:SecretAccessKey")
+	if *filePath == "" || *objectName == "" {
+		log.Fatalln("Error: file and obj-name are required parameters")
 	}
-	accessKey := parts[0]
-	secretKey := parts[1]
 
 	ctx := context.Background()
 
-	// createminio client
-	minioClient, err := minio.New(*endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
-		Secure: false, 
-		Region: *region,
+	// init minio client
+	minioClient, err := minio.New(Cfg.EndPoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(Cfg.AccessKeyID, Cfg.SecretAccessKey, ""),
+		Secure: Cfg.UseSSL,
 	})
 	if err != nil {
-		log.Fatalln("Error creating MinIO client:", err)
+		log.Fatalln("Failed to initialize MinIO client:", err)
 	}
 
-	// upload file
-	info, err := minioClient.FPutObject(ctx, *bucketName, *objectName, *filePath, minio.PutObjectOptions{})
+	info, err := minioClient.FPutObject(ctx, BucketName, *objectName, *filePath, minio.PutObjectOptions{ContentType: *contentType})
 	if err != nil {
-		log.Fatalln("Error uploading file:", err)
+		log.Fatalln("Failed to upload file:", err)
 	}
 
 	log.Printf("Successfully uploaded %s of size %d bytes\n", *objectName, info.Size)
