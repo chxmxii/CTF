@@ -4,7 +4,7 @@ category: Misc
 description: |-
   f
 
-  link: https://f2.tekup-securinets.org/?f=
+  link: https://f2.tekup-securinets.org/
 
   **author**: " chxmxii"`
 value: 500
@@ -14,9 +14,10 @@ extra:
   decay: 20
   minimum: 10
 flags:
-  - Securinets{}
+  - securinets{kk12121212121212121212kk}
+
 tags:
+ - easy
  - misc/cloud
-# files:
 state: visible
 version: "0.1"
