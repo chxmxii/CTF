@@ -1,0 +1,15 @@
+FROM php:7.4-apache
+
+# Set the working directory to /var/www/html
+WORKDIR /var/www/html
+
+# Copy the dimensions folder and the PHP file into the container
+COPY dimensions/ dimensions
+COPY index.php .
+COPY dimensions.txt .
+
+# Expose port 80 for the Apache server
+EXPOSE 80
+
+# Start the Apache server
+CMD ["apache2-foreground"]

@@ -1,0 +1,7 @@
+FROM python:3.10.4
+RUN mkdir app
+WORKDIR app
+COPY . .
+RUN pip3 install flask
+EXPOSE 5000
+CMD ["python", "app.py"]

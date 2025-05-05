@@ -1,0 +1,12 @@
+FROM python:3.10.4
+RUN useradd chxmxii
+COPY bbssti/ /home/chxmxii/
+RUN chown -R root:root /home/chxmxii/*
+RUN chmod o+x /home/chxmxii/*
+RUN mkdir /flags
+RUN rm -rf /home/chxmxii/flags
+COPY bbssti/flags /flags
+RUN pip3 install flask
+USER chxmxii
+#RUN python3 /home/chxmxii/app.py
+CMD ["python", "/home/chxmxii/app.py"]
