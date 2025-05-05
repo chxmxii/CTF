@@ -1,7 +1,7 @@
 # F² Writeup
 
 In this challenge, we’re given a parameter `f` that is vulnerable to **LFI**.  
-At first glance, reading common files doesn’t reveal anything useful. But there’s a trick... (weel, not every LFI gives a flag directly)
+At first glance, reading common files doesn’t reveal anything useful. But there’s a trick... (well, not every LFI gives a flag directly)
 
 Accessing the `/proc/mounts` file can sometimes give interesting insights into mounted volumes or filesystems:
 
