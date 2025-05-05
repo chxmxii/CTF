@@ -41,7 +41,7 @@ This confirms that the **access and secret keys** we found earlier belong to thi
 ## Accessing MinIO
 
 Download the MinIO client `mc` from the official site:  
-👉 [Download Minio here]([https://min.io/download#/mc](https://min.io/docs/minio/linux/index.html))
+👉 [Download Minio here](https://min.io/docs/minio/linux/index.html)
 
 Then, configure it with the keys we found:
 
