@@ -1,0 +1,22 @@
+name: "F²"
+author: "chxmxii"
+category: Misc
+description: |-
+  f
+
+  link: https://f2.tekup-securinets.org/?f=
+
+  **author**: " chxmxii"`
+value: 500
+type: dynamic
+extra:
+  initial: 500
+  decay: 20
+  minimum: 10
+flags:
+  - Securinets{}
+tags:
+ - misc/cloud
+# files:
+state: visible
+version: "0.1"
