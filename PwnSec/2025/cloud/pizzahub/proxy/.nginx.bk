@@ -1,0 +1,80 @@
+worker_processes  1;
+
+events { worker_connections  1024; }
+
+http {
+  # keepinbg headers untouched for AWS SigV4
+  underscores_in_headers on;
+  default_type  application/octet-stream;
+  sendfile      on;
+
+  upstream localstack_upstream {
+    server localstack:4566;
+    keepalive 32;
+  }
+
+  upstream authz_upstream {
+    server authz:8080;
+    keepalive 8;
+  }
+
+  server {
+    listen 80;
+    server_name _;
+
+    # internal auth subrequest 
+    location = /_auth {
+      internal;
+      proxy_pass http://authz_upstream/authz;
+
+      # forwarding original method and query for presigned URL checks
+      proxy_method $request_method;
+      proxy_set_header X-Original-URI $request_uri;
+
+      # pass through headers 
+      proxy_set_header Authorization $http_authorization;
+      proxy_set_header X-Amz-Security-Token $http_x_amz_security_token;
+      proxy_set_header X-Amz-Date $http_x_amz_date;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+      # no body needed
+      proxy_set_header Content-Length "";
+      proxy_pass_request_body off;
+    }
+
+    
+    location / {
+      auth_request /_auth;
+
+     
+      auth_request_set $auth_status $upstream_status;
+
+      # allowing all headers through to LocalStack
+      proxy_pass http://localstack_upstream;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+      proxy_set_header Host $host;           
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Port $server_port;
+
+
+      client_max_body_size 50M;
+    }
+    
+    error_page 403 = @denied;
+    location @denied {
+        default_type application/xml;
+            return 403 '<?xml version="1.0" encoding="UTF-8"?>
+                        <ErrorResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
+                        <Error>
+                            <Type>Sender</Type>
+                            <Code>InvalidClientTokenId</Code>
+                            <Message>The security token included in the request is invalid.</Message>
+                        </Error>
+                        <RequestId>4441f1f2-347d-4f5c-0800-daddbbead7000</RequestId>
+                        </ErrorResponse>';
+    }
+  }
+}
+

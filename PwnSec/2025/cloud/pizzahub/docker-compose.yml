@@ -1,0 +1,97 @@
+services:
+  localstack:
+    image: localstack/localstack-pro 
+    container_name: localstack
+    privileged: true
+    environment:
+      - DEBUG=1
+      - SKIP_SSL_CERT_DOWNLOAD=1
+      - LS_LOG=trace
+      - PERSISTENCE=0
+      - LOCALSTACK_AUTH_TOKEN=<REDACTED>
+      - AUTO_LOAD_POD=pizzahubprod
+      - ENFORCE_IAM=1
+      - LOCALSTACK_HOST=pwnsec.cloud
+      - HOSTNAME_EXTERNAL=pwnsec.cloud
+      - AWS_ACCESS_KEY_ID=AKIA2L03056B890WYAAZ
+      - AWS_SECRET_ACCESS_KEY=AKIA2L03056B890WYAAZ
+      - AWS_DEFAULT_REGION=eu-west-1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DATA_DIR=/var/lib/localstack/data
+      - LAMBDA_LIMITS_CODE_SIZE_ZIPPED=52428800
+      - LAMBDA_LIMITS_CREATE_FUNCTION_REQUEST_SIZE=70167211
+      - LAMBDA_EXECUTOR=docker
+      - LAMBDA_REMOTE_DOCKER=true
+      - LAMBDA_REMOVE_CONTAINERS=true
+      - LAMBDA_RUNTIME_ENVIRONMENT_TIMEOUT=120 
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - lsnet
+
+  authz:
+    build:
+      context: ./authz
+      dockerfile: Dockerfile
+    container_name: authz
+    depends_on: [localstack]
+    environment:
+      - ALLOWED_KEYS=LKIAQAAAAAAAPOEPTRQP,LSIAQAAAAAAANP62WQDJ
+      - AUTHZ_DEBUG=true
+    networks: [lsnet]
+
+
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+    container_name: proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - localstack
+      - authz
+      - app
+    networks: [lsnet]
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: app
+    depends_on: [localstack]
+    networks: [lsnet]
+
+  cleaner:
+    build:
+      context: ./cleaner
+      dockerfile: Dockerfile
+    container_name: lambda-cleaner
+    environment:
+      - PREFIX=blvkrose
+      - INTERVAL_SECONDS=300
+      - HEALTH_PORT=300
+      - AWS_REGION=eu-west-1
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_ACCESS_KEY_ID=AKIA2L03056B890WYAAZ
+      - AWS_SECRET_ACCESS_KEY=AKIA2L03056B890WYAAZ
+    depends_on: [localstack]
+    networks: [lsnet]
+
+#  terraside:
+#    image: chxmxi/terraside
+#    container_name: terraside
+#    entrypoint: sleep infinity  
+#    volumes:
+#      - ./resources:/resources:ro
+#    depends_on: [localstack]
+#    environment:
+#      - TF_VAR_access_key=AKIA2L03056B890WYAAZ
+#      - TF_VAR_secret_key=AKIA2L03056B890WYAAZ
+#      - TF_VAR_region=eu-west-1
+#    networks: [lsnet]
+
+networks:
+  lsnet:
+    driver: bridge
+    external: false

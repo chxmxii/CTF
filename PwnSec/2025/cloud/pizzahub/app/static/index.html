@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pizzahub</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #fff;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 420px;
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #e74c3c;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    .pizza-image {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .pizza-image img {
+      max-width: 120px;
+      height: auto;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #e74c3c;
+      outline: none;
+      box-shadow: 0 0 4px rgba(231, 76, 60, 0.3);
+    }
+
+    .checkbox-group label {
+      display: inline-block;
+      margin-right: 12px;
+      font-weight: normal;
+      color: #555;
+    }
+
+    button {
+      background: #000;
+      color: #fff;
+      padding: 12px 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: #ec6149;
+      color: #000;
+      transform: scale(1.02);
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 4px;
+      display: none;
+      text-align: center;
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="pizza-image">
+      <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGNxNnExc3oxM3N5ZGY3aDhjajJ1YTVicGU2MHZnZG5wc2FmMXJmeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/DdGPvJ7ZFESdi/giphy.gif" alt="Pizza logo" />
+    </div>
+
+    <form id="orderForm">
+      <div class="form-group">
+        <label for="customer">name</label>
+        <input type="text" id="customer" placeholder="u are?" required />
+      </div>
+
+      <div class="form-group">
+        <label for="restaurant">restaurant</label>
+        <select id="restaurant">
+          <option>Papa John's</option>
+          <option>Domino's</option>
+          <option>Pizza Hut</option>
+          <option>Del Capo</option>
+          <option>Little Caesars</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="pizzaType">type</label>
+        <select id="pizzaType">
+          <option>margherita</option>
+          <option>pepperoni</option>
+          <option>vegetarian</option>
+          <option>hawaiian</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="crust">crust type</label>
+        <select id="crust">
+          <option>thin</option>
+          <option>thick</option>
+          <option>stuffed</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>extra toppings</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" /> mushrooms</label>
+          <label><input type="checkbox" /> onions</label>
+          <label><input type="checkbox" /> olives</label>
+          <label><input type="checkbox" /> jalapeños</label>
+          <label><input type="checkbox" /> extra cheese</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="size">size</label>
+        <select id="size">
+          <option>s</option>
+          <option>m</option>
+          <option>l</option>
+          <option>xl</option>
+          <option>xxl</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">notes</label>
+        <textarea id="notes" rows="3" placeholder="anything else??"></textarea>
+      </div>
+      <button type="submit" id="submitBtn">🍕🍕🍕🍕</button>
+    </form>
+    <div id="result" class="message"></div>
+  </div>
+
+  <script>
+    document.getElementById('orderForm').onsubmit = async e => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const msg = document.getElementById('result');
+    btn.disabled = true;
+
+    const toppings = [...document.querySelectorAll('.checkbox-group input:checked')]
+        .map(cb => cb.parentNode.textContent.trim());
+
+    const order = {
+        customer: document.getElementById('customer').value.trim(),
+        restaurant: document.getElementById('restaurant').value,
+        pizza_type: document.getElementById('pizzaType').value,
+        crust: document.getElementById('crust').value,
+        toppings,
+        size: document.getElementById('size').value,
+        notes: document.getElementById('notes').value.trim()
+    };
+
+    msg.style.display = 'block';
+    msg.className = 'message';
+    msg.textContent = 'Sending your 🍕...';
+
+    try {
+        const res = await fetch('/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(order)
+        });
+        const data = await res.json();
+        if (!res.ok || !data.order_id) throw new Error('Order failed');
+        
+        msg.innerHTML = `Order placed! ID: ${data.order_id}. <br> Waiting for receipt...`;
+        setTimeout(() => checkReceipt(data.order_id, 0), 3000);
+    } catch (err) {
+        msg.textContent = 'Failed to place your order.';
+        btn.disabled = false;
+    }
+    };
+
+    const maxRetries = 5;
+
+    async function checkReceipt(id, n) {
+    const msg = document.getElementById('result');
+    try {
+        const res = await fetch(`/receipt/${id}`);
+        const data = await res.json();
+
+        if (data.order_id) {
+        msg.innerHTML = `Order confirmed! <br> <b>${data.delivery_name || 'unknown'}</b> will bring u ur 🍕!`;
+        document.getElementById('submitBtn').disabled = false;
+        return;
+        }
+        if (n < maxRetries) {
+        msg.textContent = `Waiting for receipt...(${n + 1}/${maxRetries})`;
+        setTimeout(() => checkReceipt(id, n + 1), 5000);
+        } else {
+        msg.textContent = 'Receipt not available.';
+        document.getElementById('submitBtn').disabled = false;
+        }
+    } 
+    catch {
+        if (n < maxRetries) setTimeout(() => checkReceipt(id, n + 1), 3000);
+        else {
+            msg.textContent = 'Could not fetch receipt.';
+            document.getElementById('submitBtn').disabled = false;
+            }
+        }
+    }
+    </script>
+
+
+</body>
+<!-- with ❤️ by cycl0x42O-->
+</html>
