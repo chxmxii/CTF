@@ -1,1 +1,1 @@
-Writeup could be found here.
+Writeup could be found [here](https://chxmxii.me/pwnsec).
